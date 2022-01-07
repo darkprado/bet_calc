@@ -1,8 +1,6 @@
 package darkprado.bet_calc.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -43,9 +41,10 @@ public class FileCalcServiceImpl implements FileCalcService {
             monthResultDto.setYears(rowDtoList.stream()
                     .filter(rowDto -> rowDto.getMonth().equals(month))
                             .findFirst().get().getYear());
-            monthResultDto.setMonth(rowDtoList.stream()
+            monthResultDto.setMonth(convertMonth(
+                    rowDtoList.stream()
                     .filter(rowDto -> rowDto.getMonth().equals(month))
-                    .findFirst().get().getMonth());
+                    .findFirst().get().getMonth()));
             rowDtoList.stream()
                     .filter(rowDto -> rowDto.getMonth().equals(month))
                     .forEach(row -> monthResult.addAndGet(row.getCash()));
@@ -54,6 +53,23 @@ public class FileCalcServiceImpl implements FileCalcService {
             monthResult.set(0);
         });
         return resultDtoList;
+    }
+
+    private String convertMonth(String month) {
+        Map<String, String> months = new HashMap<>();
+        months.put("января", "Январь");
+        months.put("февраля", "Февраль");
+        months.put("марта", "Март");
+        months.put("апреля", "Апрель");
+        months.put("мая", "Май");
+        months.put("июня", "Июнь");
+        months.put("июля", "Июль");
+        months.put("августа", "Август");
+        months.put("сентября", "Сентябрь");
+        months.put("октября", "Октябрь");
+        months.put("ноября", "Ноябрь");
+        months.put("декабря", "Декабрь");
+        return months.get(month);
     }
 
 }
