@@ -22,7 +22,24 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class FileCalcServiceImpl implements FileCalcService {
 
+    private final static Map<String, String> months;
     private final RowsMapper mapper;
+
+    static {
+        months = new HashMap<>();
+        months.put("января", "Январь");
+        months.put("февраля", "Февраль");
+        months.put("марта", "Март");
+        months.put("апреля", "Апрель");
+        months.put("мая", "Май");
+        months.put("июня", "Июнь");
+        months.put("июля", "Июль");
+        months.put("августа", "Август");
+        months.put("сентября", "Сентябрь");
+        months.put("октября", "Октябрь");
+        months.put("ноября", "Ноябрь");
+        months.put("декабря", "Декабрь");
+    }
 
     @Override
     public List<MonthResultDto> calc(MultipartFile file) {
@@ -40,11 +57,11 @@ public class FileCalcServiceImpl implements FileCalcService {
             MonthResultDto monthResultDto = new MonthResultDto();
             monthResultDto.setYears(rowDtoList.stream()
                     .filter(rowDto -> rowDto.getMonth().equals(month))
-                            .findFirst().get().getYear());
-            monthResultDto.setMonth(convertMonth(
+                            .findFirst().map(OneRowDto::getYear).orElse(null));
+            monthResultDto.setMonth(months.get(
                     rowDtoList.stream()
                     .filter(rowDto -> rowDto.getMonth().equals(month))
-                    .findFirst().get().getMonth()));
+                    .findFirst().map(OneRowDto::getMonth).orElse(null)));
             rowDtoList.stream()
                     .filter(rowDto -> rowDto.getMonth().equals(month))
                     .forEach(row -> monthResult.addAndGet(row.getCash()));
@@ -53,23 +70,6 @@ public class FileCalcServiceImpl implements FileCalcService {
             monthResult.set(0);
         });
         return resultDtoList;
-    }
-
-    private String convertMonth(String month) {
-        Map<String, String> months = new HashMap<>();
-        months.put("января", "Январь");
-        months.put("февраля", "Февраль");
-        months.put("марта", "Март");
-        months.put("апреля", "Апрель");
-        months.put("мая", "Май");
-        months.put("июня", "Июнь");
-        months.put("июля", "Июль");
-        months.put("августа", "Август");
-        months.put("сентября", "Сентябрь");
-        months.put("октября", "Октябрь");
-        months.put("ноября", "Ноябрь");
-        months.put("декабря", "Декабрь");
-        return months.get(month);
     }
 
 }
